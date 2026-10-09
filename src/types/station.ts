@@ -5,11 +5,9 @@ export type LatLon = {
   lon: number;
 };
 
-export type Station = {
+export type Station = LatLon & {
   id: string;
   name: string;
-  lat: number;
-  lon: number;
   capacity: number;
   classicBikes: number; // num_bikes_available minus num_ebikes_available
   ebikes: number;
