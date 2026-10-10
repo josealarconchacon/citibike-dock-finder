@@ -1,51 +1,89 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { DEFAULT_LOCATION_LABEL } from "@/lib/constants";
 import { formatDistance, walkingMinutes } from "@/lib/distance";
-import type { Mode, NearbyStation, StationsResult } from "@/types/station";
+import type { LatLon, Mode, NearbyStation, StationsResult } from "@/types/station";
 
 const MODES: { value: Mode; label: string }[] = [
   { value: "bike", label: "I need a bike" },
   { value: "dock", label: "I need a dock" },
 ];
 
+// The one place that builds URLs, so the mode links and "Use my location" always agree.
+// Rounds to 5 decimals (about 1 m) so an exact GPS fix never lands in browser history.
+function buildHref(mode: Mode, origin?: LatLon): string {
+  const params = new URLSearchParams({ mode });
+  if (origin) {
+    params.set("lat", origin.lat.toFixed(5));
+    params.set("lon", origin.lon.toFixed(5));
+  }
+  return `/?${params}`;
+}
+
+// plural(1, "dock") -> "1 dock", plural(3, "dock") -> "3 docks"
+function plural(count: number, word: string): string {
+  return `${count} ${word}${count === 1 ? "" : "s"}`;
+}
+
 function availability(station: NearbyStation, mode: Mode): string {
   if (mode === "dock") {
-    return `${station.docks} open docks`;
+    return plural(station.docks, "open dock");
   }
-  return `${station.classicBikes} classic · ${station.ebikes} e-bikes`;
+  return `${plural(station.classicBikes, "classic bike")} · ${plural(station.ebikes, "e-bike")}`;
+}
+
+// Pulses while a mode link is loading. Must render inside a <Link>.
+function PendingDot() {
+  const { pending } = useLinkStatus();
+  return (
+    <span
+      aria-hidden="true"
+      className={`ml-2 inline-block size-2 rounded-full bg-current ${
+        pending ? "animate-pulse" : "invisible"
+      }`}
+    />
+  );
 }
 
 export function StationFinder({ initial }: { initial: StationsResult }) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+
   const { stations, origin, mode, usingDefaultLocation } = initial;
+  const currentOrigin = usingDefaultLocation ? undefined : origin;
+  const busy = locating || isPending;
 
-  // Keeps the user's location in the URL when they switch modes.
-  const hrefFor = (nextMode: Mode) => {
-    const params = new URLSearchParams({ mode: nextMode });
-    if (!usingDefaultLocation) {
-      params.set("lat", String(origin.lat));
-      params.set("lon", String(origin.lon));
-    }
-    return `/?${params}`;
-  };
-
-  const useMyLocation = () => {
-    if (!navigator.geolocation) {
+  const locateMe = () => {
+    if (!("geolocation" in navigator)) {
       setLocationError("Your browser can't share a location.");
       return;
     }
 
+    setLocating(true);
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
+        setLocating(false);
         setLocationError(null);
-        router.push(`/?lat=${coords.latitude}&lon=${coords.longitude}&mode=${mode}`);
+        // isPending stays true until the new page has arrived.
+        startTransition(() => {
+          router.push(buildHref(mode, { lat: coords.latitude, lon: coords.longitude }));
+        });
       },
-      () => setLocationError("We couldn't get your location."),
+      (error) => {
+        setLocating(false);
+        setLocationError(
+          error.code === error.PERMISSION_DENIED
+            ? "Location is blocked, so this list uses the default spot."
+            : "We couldn't get your location. Try again.",
+        );
+      },
+      // Without a timeout, the browser can wait forever.
+      { timeout: 10_000, maximumAge: 60_000 },
     );
   };
 
@@ -55,7 +93,7 @@ export function StationFinder({ initial }: { initial: StationsResult }) {
         {MODES.map(({ value, label }) => (
           <Link
             key={value}
-            href={hrefFor(value)}
+            href={buildHref(value, currentOrigin)}
             aria-current={value === mode ? "page" : undefined}
             className={
               value === mode
@@ -64,6 +102,7 @@ export function StationFinder({ initial }: { initial: StationsResult }) {
             }
           >
             {label}
+            <PendingDot />
           </Link>
         ))}
       </nav>
@@ -74,10 +113,11 @@ export function StationFinder({ initial }: { initial: StationsResult }) {
         </p>
         <button
           type="button"
-          onClick={useMyLocation}
-          className="font-semibold text-teal-700 underline dark:text-teal-400"
+          onClick={locateMe}
+          disabled={busy}
+          className="font-semibold text-teal-700 underline disabled:opacity-60 dark:text-teal-400"
         >
-          Use my location
+          {busy ? "Finding you…" : "Use my location"}
         </button>
       </div>
 
@@ -87,27 +127,32 @@ export function StationFinder({ initial }: { initial: StationsResult }) {
         </p>
       )}
 
-      {stations.length === 0 ? (
-        <p className="text-sm text-slate-600 dark:text-slate-400">No stations found nearby.</p>
-      ) : (
-        <ul className="space-y-2">
-          {stations.map((station) => (
-            <li
-              key={station.id}
-              className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900"
-            >
-              <div className="flex items-baseline justify-between gap-3">
-                <h2 className="font-semibold">{station.name}</h2>
-                <span className="shrink-0 text-sm text-slate-600 dark:text-slate-400">
-                  {formatDistance(station.distanceMeters)} ·{" "}
-                  {walkingMinutes(station.distanceMeters)} min walk
-                </span>
-              </div>
-              <p className="mt-1 text-sm">{availability(station, mode)}</p>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div aria-busy={isPending} className={isPending ? "opacity-50 transition-opacity" : ""}>
+        {stations.length === 0 ? (
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            No stations with {mode === "bike" ? "bikes" : "open docks"} nearby right now. Try again
+            in a minute.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {stations.map((station) => (
+              <li
+                key={station.id}
+                className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <h2 className="font-semibold">{station.name}</h2>
+                  <span className="shrink-0 text-sm text-slate-600 dark:text-slate-400">
+                    {formatDistance(station.distanceMeters)} ·{" "}
+                    {walkingMinutes(station.distanceMeters)} min walk
+                  </span>
+                </div>
+                <p className="mt-1 text-sm">{availability(station, mode)}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
