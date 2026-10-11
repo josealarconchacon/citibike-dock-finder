@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchFeeds } from "@/lib/gbfs";
-import { STATION_INFO_URL } from "@/lib/constants";
+import { STATION_INFO_URL, STATION_STATUS_URL } from "@/lib/constants";
 import { parseValidStations, stationInfoSchema, stationStatusSchema } from "@/lib/schemas";
 import { makeInfo, makeStatus } from "./fixtures";
 
@@ -53,6 +53,15 @@ describe("fetchFeeds", () => {
     const [station] = parseValidStations(stationInfoSchema, info.data.stations);
 
     expect(station).not.toHaveProperty("rental_uris");
+  });
+
+  it("gives each request a timeout so a stuck feed can't hang the page", async () => {
+    const fetchMock = mockFeeds(infoFeed, statusFeed);
+    await fetchFeeds();
+
+    const withTimeout = { signal: expect.any(AbortSignal) };
+    expect(fetchMock).toHaveBeenCalledWith(STATION_INFO_URL, withTimeout);
+    expect(fetchMock).toHaveBeenCalledWith(STATION_STATUS_URL, withTimeout);
   });
 
   it("throws a clear error when Citi Bike is down", async () => {

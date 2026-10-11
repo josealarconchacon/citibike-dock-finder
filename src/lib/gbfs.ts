@@ -1,4 +1,4 @@
-import { STATION_INFO_URL, STATION_STATUS_URL } from "@/lib/constants";
+import { FEED_TIMEOUT_MS, STATION_INFO_URL, STATION_STATUS_URL } from "@/lib/constants";
 import {
   stationInfoFeedSchema,
   stationStatusFeedSchema,
@@ -7,9 +7,10 @@ import {
 } from "@/lib/schemas";
 import type { z } from "zod";
 
-// Grabs one feed and throws if the request fails or the JSON isn't what we expect.
+// Grabs one feed and throws if the request fails, takes too long, or the JSON isn't
+// what we expect.
 async function fetchFeed<T>(url: string, schema: z.ZodType<T>): Promise<T> {
-  const response = await fetch(url);
+  const response = await fetch(url, { signal: AbortSignal.timeout(FEED_TIMEOUT_MS) });
 
   if (!response.ok) {
     throw new Error(`Citi Bike feed failed (${response.status}): ${url}`);
