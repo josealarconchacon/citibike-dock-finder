@@ -25,7 +25,7 @@ export default function Error({
       <button
         type="button"
         onClick={() => retry()}
-        className="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-white dark:text-slate-900"
+        className="mt-4 min-h-11 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-white dark:text-slate-900"
       >
         Try again
       </button>
