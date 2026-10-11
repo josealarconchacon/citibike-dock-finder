@@ -41,7 +41,7 @@ export function StationCard({ station, mode }: { station: NearbyStation; mode: M
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`Walking directions to ${station.name} (opens in a new tab)`}
-        className="mt-3 inline-block text-sm font-medium text-teal-700 underline-offset-2 hover:underline dark:text-teal-400"
+        className="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-teal-700 underline-offset-2 hover:underline dark:text-teal-400"
       >
         Walking directions
       </a>
