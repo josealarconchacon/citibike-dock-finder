@@ -24,8 +24,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </header>
           <main className="flex-1">{children}</main>
           <footer className="mt-8 text-xs text-slate-500 dark:text-slate-400">
-            Data: Citi Bike public GBFS feed, refreshed every 60 seconds. Not affiliated with Citi
-            Bike or Lyft.
+            Data: Citi Bike&apos;s public GBFS feed. Counts can be about a minute behind; reload the
+            page for the latest. Not affiliated with Citi Bike or Lyft.
           </footer>
         </div>
       </body>
