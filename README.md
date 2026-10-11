@@ -4,16 +4,19 @@ Find the nearest Citi Bike station with a free bike or an open dock, using Citi 
 
 ## What it does
 
-- Shows the 10 nearest stations to you or browse on the default location
+- Shows the 10 nearest stations within 5 km of you, or of a default location (Hunter College) if you don't share yours
 - Switches between **"I need a bike"** and **"I need a dock"**
 - Splits classic bikes from e-bikes
 - Shows distance and walking time, with a link to walking directions
-- Handles loading, empty and error states
+- Shows how old the data is
+- Handles loading, empty, out-of-area and error states
 
 ## How it works
 
-- `page.tsx` is a **Server Component**. The first list arrives as ready-made HTML.
-- `StationFinder` is a **Client Component**. It handles location and the bike/dock toggle.
+- The URL is the source of truth: `?mode=`, `lat=` and `lon=` decide what the page shows, so every view can be shared or bookmarked.
+- `page.tsx` is a **Server Component**. It reads the URL and renders the station list, which arrives as ready-made HTML and never ships as JavaScript.
+- `StationFinder` is a **Client Component**. It handles location and the bike/dock toggle, and wraps the server-rendered list.
+- Your location is rounded to about 110 m before it goes into the URL.
 - `lib/data.ts` uses the Next.js 16 `"use cache"` directive, so everyone shares one pair of requests to Citi Bike per minute.
 - Feed data is checked with **Zod**; stations with zero capacity or not installed are filtered out.
 - All logic lives in plain TypeScript functions in `src/lib/`, with unit tests.
@@ -31,12 +34,13 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-| Command             | What it does                     |
-| ------------------- | -------------------------------- |
-| `npm test`          | Run all unit and component tests |
-| `npm run lint`      | ESLint                           |
-| `npm run typecheck` | TypeScript with no output        |
-| `npm run build`     | Production build                 |
+| Command                | What it does                     |
+| ---------------------- | -------------------------------- |
+| `npm test`             | Run all unit and component tests |
+| `npm run lint`         | ESLint                           |
+| `npm run typecheck`    | TypeScript with no output        |
+| `npm run format:check` | Prettier, without changing files |
+| `npm run build`        | Production build                 |
 
 ## What I'd do next
 
