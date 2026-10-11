@@ -3,9 +3,9 @@
 import Link, { useLinkStatus } from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { StationList } from "@/components/StationList";
 import { DEFAULT_LOCATION_LABEL } from "@/lib/constants";
-import { formatDistance, walkingMinutes } from "@/lib/distance";
-import type { LatLon, Mode, NearbyStation, StationsResult } from "@/types/station";
+import type { LatLon, Mode, StationsResult } from "@/types/station";
 
 const MODES: { value: Mode; label: string }[] = [
   { value: "bike", label: "I need a bike" },
@@ -21,18 +21,6 @@ function buildHref(mode: Mode, origin?: LatLon): string {
     params.set("lon", origin.lon.toFixed(5));
   }
   return `/?${params}`;
-}
-
-// plural(1, "dock") -> "1 dock", plural(3, "dock") -> "3 docks"
-function plural(count: number, word: string): string {
-  return `${count} ${word}${count === 1 ? "" : "s"}`;
-}
-
-function availability(station: NearbyStation, mode: Mode): string {
-  if (mode === "dock") {
-    return plural(station.docks, "open dock");
-  }
-  return `${plural(station.classicBikes, "classic bike")} · ${plural(station.ebikes, "e-bike")}`;
 }
 
 // Pulses while a mode link is loading. Must render inside a <Link>.
@@ -128,30 +116,7 @@ export function StationFinder({ initial }: { initial: StationsResult }) {
       )}
 
       <div aria-busy={isPending} className={isPending ? "opacity-50 transition-opacity" : ""}>
-        {stations.length === 0 ? (
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            No stations with {mode === "bike" ? "bikes" : "open docks"} nearby right now. Try again
-            in a minute.
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {stations.map((station) => (
-              <li
-                key={station.id}
-                className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900"
-              >
-                <div className="flex items-baseline justify-between gap-3">
-                  <h2 className="font-semibold">{station.name}</h2>
-                  <span className="shrink-0 text-sm text-slate-600 dark:text-slate-400">
-                    {formatDistance(station.distanceMeters)} ·{" "}
-                    {walkingMinutes(station.distanceMeters)} min walk
-                  </span>
-                </div>
-                <p className="mt-1 text-sm">{availability(station, mode)}</p>
-              </li>
-            ))}
-          </ul>
-        )}
+        <StationList stations={stations} mode={mode} />
       </div>
     </div>
   );
