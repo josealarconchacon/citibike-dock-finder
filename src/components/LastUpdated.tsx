@@ -24,7 +24,7 @@ export function LastUpdated({ updatedAt }: { updatedAt: number }) {
   const now = useSyncExternalStore(subscribe, getNow, getServerNow);
 
   return (
-    <p className="text-xs text-slate-500 dark:text-slate-400" aria-live="polite">
+    <p className="text-xs text-slate-500 dark:text-slate-400">
       {now === null ? "Live data" : `Updated ${describeAge(updatedAt, now)}`}
     </p>
   );
