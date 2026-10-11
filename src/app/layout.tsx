@@ -13,7 +13,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
-      <body className="min-h-dvh bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+      <body
+        suppressHydrationWarning
+        className="min-h-dvh bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100"
+      >
         <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-4 py-6">
           <header className="mb-5">
             <h1 className="text-2xl font-bold tracking-tight">Citi Bike Dock Finder</h1>
