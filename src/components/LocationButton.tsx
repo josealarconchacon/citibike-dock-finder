@@ -3,39 +3,42 @@
 import { useState } from "react";
 import type { LatLon } from "@/types/station";
 
+// Why the browser couldn't give a location. The parent turns this into a message,
+// because only it knows which stations are on screen.
+export type LocationProblem = "unsupported" | "blocked" | "unavailable";
+
 // Asks the browser for the user's location.
 export function LocationButton({
   onLocated,
   onError,
-  disabled = false,
+  pending = false,
 }: {
   onLocated: (origin: LatLon) => void;
-  onError: (message: string) => void;
-  disabled?: boolean;
+  onError: (problem: LocationProblem) => void;
+  // True while the parent is still loading the list for the new location.
+  pending?: boolean;
 }) {
   const [locating, setLocating] = useState(false);
+  const busy = locating || pending;
 
   function handleClick() {
     if (!("geolocation" in navigator)) {
-      onError("Your browser can't share its location.");
+      onError("unsupported");
       return;
     }
 
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      ({ coords }) => {
         setLocating(false);
-        onLocated({ lat: position.coords.latitude, lon: position.coords.longitude });
+        onLocated({ lat: coords.latitude, lon: coords.longitude });
       },
       (error) => {
         setLocating(false);
-        onError(
-          error.code === error.PERMISSION_DENIED
-            ? "Location is blocked, so this list uses the default spot."
-            : "Couldn't get your location. Try again in a moment.",
-        );
+        onError(error.code === error.PERMISSION_DENIED ? "blocked" : "unavailable");
       },
-      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 60_000 },
+      // Without a timeout, the browser can wait forever.
+      { timeout: 10_000, maximumAge: 60_000 },
     );
   }
 
@@ -43,10 +46,10 @@ export function LocationButton({
     <button
       type="button"
       onClick={handleClick}
-      disabled={disabled || locating}
-      className="rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60"
+      disabled={busy}
+      className="inline-flex min-h-11 items-center font-semibold text-teal-700 underline disabled:opacity-60 dark:text-teal-400"
     >
-      {locating ? "Finding you…" : "Use my location"}
+      {busy ? "Finding you…" : "Use my location"}
     </button>
   );
 }

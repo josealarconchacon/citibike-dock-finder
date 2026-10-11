@@ -1,6 +1,6 @@
 import { cacheLife } from "next/cache";
 import { fetchFeeds } from "@/lib/gbfs";
-import { nearest } from "@/lib/nearest";
+import { isInServiceArea, nearest } from "@/lib/nearest";
 import { joinStations } from "@/lib/stations";
 import type { LatLon, Mode, Station, StationsResult } from "@/types/station";
 import { parseValidStations, stationInfoSchema, stationStatusSchema } from "@/lib/schemas";
@@ -22,7 +22,7 @@ export async function getAllStations(): Promise<{ stations: Station[]; updatedAt
   };
 }
 
-// Used by both the page (first load) and the API route refreshes.
+// Used by the page on every request; only the station list above is cached.
 export async function getNearbyStations(query: {
   origin: LatLon;
   mode: Mode;
@@ -35,6 +35,7 @@ export async function getNearbyStations(query: {
     origin: query.origin,
     mode: query.mode,
     usingDefaultLocation: query.usingDefaultLocation,
+    outsideServiceArea: !isInServiceArea(stations, query.origin),
     updatedAt,
   };
 }

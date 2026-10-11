@@ -8,24 +8,23 @@ export type LatLon = {
 export type Station = LatLon & {
   id: string;
   name: string;
-  capacity: number;
   classicBikes: number; // num_bikes_available minus num_ebikes_available
   ebikes: number;
   docks: number;
   isRenting: boolean;
   isReturning: boolean;
-  lastReported: number; // milliseconds (the feed sends seconds)
 };
 
 export type NearbyStation = Station & {
   distanceMeters: number;
 };
 
-// What the page and the API route both send to the browser.
+// What getNearbyStations() hands to the page.
 export type StationsResult = {
   stations: NearbyStation[];
   origin: LatLon;
   mode: Mode;
   usingDefaultLocation: boolean;
+  outsideServiceArea: boolean; // no station of any kind within MAX_DISTANCE_METERS
   updatedAt: number; // milliseconds
 };

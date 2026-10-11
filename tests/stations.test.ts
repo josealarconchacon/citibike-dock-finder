@@ -24,11 +24,6 @@ describe("joinStations", () => {
     expect(station.ebikes).toBe(4);
   });
 
-  it("converts last_reported from seconds to milliseconds", () => {
-    const [station] = joinStations([makeInfo()], [makeStatus({ last_reported: 100 })]);
-    expect(station.lastReported).toBe(100_000);
-  });
-
   it("drops stations that are not installed", () => {
     expect(joinStations([makeInfo()], [makeStatus({ is_installed: false })])).toEqual([]);
   });

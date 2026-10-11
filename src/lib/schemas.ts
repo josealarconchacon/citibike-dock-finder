@@ -20,7 +20,6 @@ export const stationStatusSchema = z.object({
   is_installed: flag,
   is_renting: flag,
   is_returning: flag,
-  last_reported: z.number(), // seconds
 });
 
 // Feed wrappers check only the envelope. Each station is validated on its own

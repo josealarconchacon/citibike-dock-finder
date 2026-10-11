@@ -19,14 +19,12 @@ export function joinStations(info: StationInfo[], status: StationStatus[]): Stat
       name: station.name,
       lat: station.lat,
       lon: station.lon,
-      capacity: station.capacity,
       // num_bikes_available already includes e-bikes.
       classicBikes: Math.max(0, live.num_bikes_available - live.num_ebikes_available),
       ebikes: live.num_ebikes_available,
       docks: live.num_docks_available,
       isRenting: live.is_renting,
       isReturning: live.is_returning,
-      lastReported: live.last_reported * 1000,
     });
   }
 

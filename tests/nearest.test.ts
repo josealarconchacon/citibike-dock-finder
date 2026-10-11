@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nearest } from "@/lib/nearest";
+import { isInServiceArea, nearest } from "@/lib/nearest";
 import { makeStation } from "./fixtures";
 
 const origin = { lat: 40.7685, lon: -73.9645 };
@@ -7,6 +7,8 @@ const origin = { lat: 40.7685, lon: -73.9645 };
 const close = makeStation({ id: "close", lat: 40.769, lon: -73.9645 });
 const middle = makeStation({ id: "middle", lat: 40.772, lon: -73.9645 });
 const far = makeStation({ id: "far", lat: 40.78, lon: -73.9645 });
+// About 8 km north of the origin, past the 5 km limit.
+const outOfRange = makeStation({ id: "out-of-range", lat: 40.84, lon: -73.9645 });
 
 describe("nearest", () => {
   it("sorts stations from closest to farthest", () => {
@@ -42,7 +44,24 @@ describe("nearest", () => {
     expect(ids).toEqual(["open"]);
   });
 
+  it("leaves out stations beyond the maximum distance", () => {
+    const ids = nearest([outOfRange, close], origin, "bike").map((s) => s.id);
+    expect(ids).toEqual(["close"]);
+  });
+
   it("returns an empty list when nothing matches", () => {
     expect(nearest([makeStation({ docks: 0 })], origin, "dock")).toEqual([]);
+  });
+});
+
+describe("isInServiceArea", () => {
+  it("is true when any station is in range, even one with nothing available", () => {
+    const empty = makeStation({ classicBikes: 0, ebikes: 0, docks: 0 });
+    expect(isInServiceArea([outOfRange, empty], origin)).toBe(true);
+  });
+
+  it("is false when every station is too far away", () => {
+    expect(isInServiceArea([outOfRange], origin)).toBe(false);
+    expect(isInServiceArea([], origin)).toBe(false);
   });
 });

@@ -1,46 +1,51 @@
 "use client";
 
-import type { Mode } from "@/types/station";
+import Link from "next/link";
+import { buildHref } from "@/lib/query";
+import type { LatLon, Mode } from "@/types/station";
 
-const OPTIONS: { value: Mode; label: string }[] = [
+const MODES: { value: Mode; label: string }[] = [
   { value: "bike", label: "I need a bike" },
   { value: "dock", label: "I need a dock" },
 ];
 
+// Each mode is a link, so the URL stays the source of truth for which one is selected.
+// Pass origin only when the user has shared a location, so the links keep it.
 export function ModeToggle({
   mode,
-  onChange,
-  disabled = false,
+  origin,
+  onSelect,
 }: {
   mode: Mode;
-  onChange: (mode: Mode) => void;
-  disabled?: boolean;
+  origin?: LatLon;
+  // Lets the parent run the navigation itself, so it can show its own loading state.
+  // Without it the links navigate on their own.
+  onSelect?: (mode: Mode) => void;
 }) {
   return (
-    <div
-      role="group"
-      aria-label="What do you need?"
-      className="grid grid-cols-2 rounded-lg bg-slate-200 p-1 dark:bg-slate-800"
-    >
-      {OPTIONS.map((option) => {
-        const selected = option.value === mode;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            aria-pressed={selected}
-            disabled={disabled}
-            onClick={() => onChange(option.value)}
-            className={`rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 ${
-              selected
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-950 dark:text-white"
-                : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-            }`}
-          >
-            {option.label}
-          </button>
-        );
-      })}
-    </div>
+    <nav className="grid grid-cols-2 gap-2" aria-label="What do you need?">
+      {MODES.map(({ value, label }) => (
+        <Link
+          key={value}
+          href={buildHref(value, origin)}
+          // onNavigate only fires for in-app navigation, so Cmd/Ctrl+click still opens a new tab.
+          onNavigate={
+            onSelect &&
+            ((event) => {
+              event.preventDefault();
+              onSelect(value);
+            })
+          }
+          aria-current={value === mode ? "page" : undefined}
+          className={
+            value === mode
+              ? "flex min-h-11 items-center justify-center rounded-lg bg-teal-700 px-3 py-2 text-center text-sm font-semibold text-white"
+              : "flex min-h-11 items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-semibold dark:border-slate-700"
+          }
+        >
+          {label}
+        </Link>
+      ))}
+    </nav>
   );
 }

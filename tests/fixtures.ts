@@ -22,7 +22,6 @@ export function makeStatus(overrides: Partial<StationStatus> = {}): StationStatu
     is_installed: true,
     is_renting: true,
     is_returning: true,
-    last_reported: 1_791_500_000,
     ...overrides,
   };
 }
@@ -33,13 +32,11 @@ export function makeStation(overrides: Partial<Station> = {}): Station {
     name: "E 68 St & Lexington Ave",
     lat: 40.7685,
     lon: -73.9645,
-    capacity: 30,
     classicBikes: 6,
     ebikes: 4,
     docks: 20,
     isRenting: true,
     isReturning: true,
-    lastReported: 1_791_500_000_000,
     ...overrides,
   };
 }
