@@ -44,10 +44,10 @@ npm run dev        # http://localhost:3000
 
 ## What I'd do next
 
-- Auto-refresh every 60 seconds while the tab is visible
-- Save favorite stations in the browser
-- Search by address instead of GPS
-- A map view
+- [ ] Auto-refresh every 60 seconds while the tab is visible
+- [ ] Save favorite stations in the browser
+- [ ] Search by address instead of GPS
+- [ ] A map view
 
 ## Data
 
