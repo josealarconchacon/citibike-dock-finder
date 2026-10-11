@@ -1,14 +1,27 @@
-// Shown automatically while page.tsx waits for the station data.
 export default function Loading() {
+  const block =
+    "animate-pulse rounded-lg bg-slate-200 motion-reduce:animate-none dark:bg-slate-800";
+
   return (
-    <div aria-busy="true" aria-live="polite">
+    <div role="status">
       <span className="sr-only">Loading nearby stations…</span>
-      <div className="mb-4 h-10 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
-      <ul className="space-y-3">
-        {Array.from({ length: 5 }, (_, i) => (
-          <li key={i} className="h-24 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
-        ))}
-      </ul>
+      <div aria-hidden="true" className="space-y-4">
+        <div className="grid grid-cols-2 gap-2">
+          <div className={`h-11 ${block}`} />
+          <div className={`h-11 ${block}`} />
+        </div>
+        <div className="flex h-11 items-center justify-between">
+          <div className={`h-4 w-32 ${block}`} />
+          <div className={`h-4 w-28 ${block}`} />
+        </div>
+        <div className={`h-4 w-44 ${block}`} />
+        <div className={`h-6 w-56 ${block}`} />
+        <div className="space-y-3">
+          {Array.from({ length: 5 }, (_, i) => (
+            <div key={i} className={`h-40 rounded-xl ${block}`} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
