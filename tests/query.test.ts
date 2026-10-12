@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { buildHref, parseQuery } from "@/lib/query";
+import { buildHref } from "@/lib/href";
+import { parseQuery } from "@/lib/query";
 import { DEFAULT_LOCATION } from "@/lib/constants";
 
 describe("parseQuery", () => {
-  it("uses the default location and bike mode when nothing is given", () => {
+  it("uses the default location, bike mode and list view when nothing is given", () => {
     expect(parseQuery({})).toEqual({
       origin: DEFAULT_LOCATION,
       mode: "bike",
+      view: "list",
       usingDefaultLocation: true,
     });
   });
@@ -15,8 +17,14 @@ describe("parseQuery", () => {
     expect(parseQuery({ lat: "40.68", lon: "-73.97", mode: "dock" })).toEqual({
       origin: { lat: 40.68, lon: -73.97 },
       mode: "dock",
+      view: "list",
       usingDefaultLocation: false,
     });
+  });
+
+  it("reads the map view and falls back to list for an unknown view", () => {
+    expect(parseQuery({ view: "map" }).view).toBe("map");
+    expect(parseQuery({ view: "globe" }).view).toBe("list");
   });
 
   it("falls back when lat or lon is not a number or out of range", () => {
@@ -53,22 +61,28 @@ describe("parseQuery", () => {
 
 describe("buildHref", () => {
   it("builds a link with only the mode when there is no location", () => {
-    expect(buildHref("dock")).toBe("/?mode=dock");
+    expect(buildHref({ mode: "dock", view: "list" })).toBe("/?mode=dock");
   });
 
-  it("adds the location rounded to 3 decimals", () => {
-    expect(buildHref("bike", { lat: 40.123456789, lon: -73.987654321 })).toBe(
-      "/?mode=bike&lat=40.123&lon=-73.988",
-    );
+  it("adds the view only when it is the map", () => {
+    expect(buildHref({ mode: "dock", view: "map" })).toBe("/?mode=dock&view=map");
+  });
+
+  it("adds the location rounded to 5 decimals", () => {
+    expect(
+      buildHref({ mode: "bike", view: "list", origin: { lat: 40.123456789, lon: -73.987654321 } }),
+    ).toBe("/?mode=bike&lat=40.12346&lon=-73.98765");
   });
 
   it("produces a URL that parseQuery reads back to the same values", () => {
     const origin = { lat: 40.68, lon: -73.97 };
-    const params = new URL(buildHref("dock", origin), "http://localhost").searchParams;
+    const href = buildHref({ mode: "dock", view: "map", origin });
+    const params = new URL(href, "http://localhost").searchParams;
 
     expect(parseQuery(Object.fromEntries(params))).toEqual({
       origin,
       mode: "dock",
+      view: "map",
       usingDefaultLocation: false,
     });
   });

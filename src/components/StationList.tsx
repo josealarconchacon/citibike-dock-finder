@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { StationCard } from "@/components/StationCard";
 import { DEFAULT_LOCATION_LABEL, MAX_DISTANCE_METERS } from "@/lib/constants";
-import { buildHref } from "@/lib/query";
+import { buildHref } from "@/lib/href";
 import type { Mode, NearbyStation } from "@/types/station";
 
 export function StationList({
@@ -23,7 +23,7 @@ export function StationList({
           Citi Bike runs in New York City, Jersey City and Hoboken.
         </p>
         <Link
-          href={buildHref(mode)}
+          href={buildHref({ mode, view: "list" })}
           className="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-teal-700 underline dark:text-teal-400"
         >
           See stations near {DEFAULT_LOCATION_LABEL}

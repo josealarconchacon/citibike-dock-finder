@@ -19,3 +19,7 @@ export const MAX_DISTANCE_METERS = 5_000;
 
 // Rough walking speed used for "X min walk" (about 4.8 km/h).
 export const WALKING_METERS_PER_MINUTE = 80;
+
+export const MAP_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+export const MAP_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
