@@ -1,5 +1,8 @@
 export type Mode = "bike" | "dock";
 
+// Howstations are shown: a list (default) or a map.
+export type View = "list" | "map";
+
 export type LatLon = {
   lat: number;
   lon: number;
