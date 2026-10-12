@@ -6,8 +6,16 @@ type RawParam = string | string[] | null | undefined;
 
 const first = (value: RawParam) => (Array.isArray(value) ? value[0] : (value ?? undefined));
 
-const latSchema = z.coerce.number().min(-90).max(90);
-const lonSchema = z.coerce.number().min(-180).max(180);
+// Only a plain decimal such as "40.68" or "-73.97" counts as a coordinate. Checking the text
+// first matters because Number("") and Number(" ") are both 0, which is a valid latitude.
+const decimal = z
+  .string()
+  .trim()
+  .regex(/^-?\d+(\.\d+)?$/)
+  .transform(Number);
+
+const latSchema = decimal.pipe(z.number().min(-90).max(90));
+const lonSchema = decimal.pipe(z.number().min(-180).max(180));
 const modeSchema = z.enum(["bike", "dock"]);
 const viewSchema = z.enum(["list", "map"]);
 
@@ -28,8 +36,7 @@ export function parseQuery(params: {
   const lon = lonSchema.safeParse(first(params.lon));
   const mode = modeSchema.safeParse(first(params.mode));
   const view = viewSchema.safeParse(first(params.view));
-  const hasLocation =
-    lat.success && lon.success && first(params.lat) !== "" && first(params.lon) !== "";
+  const hasLocation = lat.success && lon.success;
 
   return {
     origin: hasLocation ? { lat: lat.data, lon: lon.data } : DEFAULT_LOCATION,

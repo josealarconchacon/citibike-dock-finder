@@ -6,7 +6,7 @@ import { LastUpdated } from "@/components/LastUpdated";
 import { LocationButton, type LocationProblem } from "@/components/LocationButton";
 import { ModeToggle } from "@/components/ModeToggle";
 import { DEFAULT_LOCATION_LABEL } from "@/lib/constants";
-import { buildHref } from "@/lib/query";
+import { buildHref } from "@/lib/href";
 import type { LatLon, Mode } from "@/types/station";
 
 // The interactive controls around the station list. The list itself arrives as children,
@@ -47,7 +47,7 @@ export function StationFinder({
   const switchMode = (nextMode: Mode) => {
     startTransition(() => {
       setShownMode(nextMode);
-      router.push(buildHref(nextMode, origin));
+      router.push(buildHref({ mode: nextMode, view: "list", origin }));
     });
   };
 
@@ -55,7 +55,7 @@ export function StationFinder({
     setLocationProblem(null);
     startTransition(() => {
       setLoadingLocation(true);
-      router.push(buildHref(mode, located));
+      router.push(buildHref({ mode, view: "list", origin: located }));
     });
   };
 

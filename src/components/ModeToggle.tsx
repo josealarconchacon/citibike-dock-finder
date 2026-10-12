@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { buildHref } from "@/lib/query";
+import { buildHref } from "@/lib/href";
 import type { LatLon, Mode } from "@/types/station";
 
 const MODES: { value: Mode; label: string }[] = [
@@ -27,7 +27,7 @@ export function ModeToggle({
       {MODES.map(({ value, label }) => (
         <Link
           key={value}
-          href={buildHref(value, origin)}
+          href={buildHref({ mode: value, view: "list", origin })}
           // onNavigate only fires for in-app navigation, so Cmd/Ctrl+click still opens a new tab.
           onNavigate={
             onSelect &&

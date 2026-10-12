@@ -156,7 +156,7 @@ describe("StationFinder", () => {
 
     expect(screen.getByText("Near you")).toBeTruthy();
     expect(screen.getByRole("link", { name: "I need a dock" }).getAttribute("href")).toBe(
-      "/?mode=dock&lat=40.680&lon=-73.970",
+      "/?mode=dock&lat=40.68000&lon=-73.97000",
     );
   });
 
@@ -169,7 +169,7 @@ describe("StationFinder", () => {
 
     await userEvent.click(screen.getByRole("link", { name: "I need a dock" }));
 
-    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.680&lon=-73.970");
+    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.68000&lon=-73.97000");
   });
 
   it("shows how old the data is", () => {
@@ -192,7 +192,7 @@ describe("StationFinder", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Use my location" }));
 
-    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.680&lon=-73.970");
+    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.68000&lon=-73.97000");
   });
 
   it("shows an error and stays put when location is blocked", async () => {
