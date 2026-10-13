@@ -41,9 +41,18 @@ const originIcon = divIcon({
 
 function FitBounds({ points }: { points: LatLngTuple[] }) {
   const map = useMap();
+
   useEffect(() => {
+    if (points.length === 0) return;
+
+    if (points.length === 1) {
+      map.setView(points[0], 15);
+      return;
+    }
+
     map.fitBounds(points, { padding: [40, 40], maxZoom: 17 });
   }, [map, points]);
+
   return null;
 }
 
@@ -63,6 +72,7 @@ export function StationMap({
     () => [[origin.lat, origin.lon], ...stations.map((s): LatLngTuple => [s.lat, s.lon])],
     [origin, stations],
   );
+
   const originLabel = usingDefaultLocation ? DEFAULT_LOCATION_LABEL : "Your location";
 
   return (
@@ -107,6 +117,7 @@ export function StationMap({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block font-semibold"
+                    aria-label={`Walking directions to ${station.name}`}
                   >
                     Walking directions
                   </a>
@@ -127,6 +138,9 @@ export function StationMap({
         </li>
         <li className="flex items-center gap-1.5">
           <span aria-hidden="true" className="size-3 rounded-full bg-amber-700" /> 1 to 3
+        </li>
+        <li className="flex items-center gap-1.5">
+          <span aria-hidden="true" className="size-3 rounded-full bg-rose-700" /> 0
         </li>
         <li className="flex items-center gap-1.5">
           <span aria-hidden="true" className="size-3 rounded-full bg-sky-600" /> {originLabel}
