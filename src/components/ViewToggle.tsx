@@ -8,8 +8,6 @@ const VIEWS: { value: View; label: string }[] = [
   { value: "map", label: "Map" },
 ];
 
-// Real links (like the mode toggle), so the view is in the URL: Back, refresh
-// and shared links all keep it.
 export function ViewToggle({ view, mode, origin }: { view: View; mode: Mode; origin?: LatLon }) {
   return (
     <nav
