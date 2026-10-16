@@ -6,6 +6,7 @@ import { StationCard } from "@/components/StationCard";
 import { StationList } from "@/components/StationList";
 import { ModeToggle } from "@/components/ModeToggle";
 import { StationFinder } from "@/components/StationFinder";
+import { ViewToggle } from "@/components/ViewToggle";
 import { describeAge } from "@/components/LastUpdated";
 import { makeStation } from "./fixtures";
 
@@ -31,6 +32,7 @@ vi.mock("next/link", () => ({
       }}
     />
   ),
+  useLinkStatus: () => ({ pending: false }),
 }));
 
 type Geolocate = (
@@ -119,6 +121,26 @@ describe("ModeToggle", () => {
     expect(dock.getAttribute("aria-current")).toBeNull();
     expect(dock.getAttribute("href")).toBe("/?mode=dock");
   });
+
+  it("keeps the map view in the mode links", () => {
+    render(<ModeToggle mode="bike" view="map" />);
+
+    expect(screen.getByRole("link", { name: "I need a dock" }).getAttribute("href")).toBe(
+      "/?mode=dock&view=map",
+    );
+  });
+});
+
+describe("ViewToggle", () => {
+  it("marks the current view and keeps mode and location in the links", () => {
+    render(<ViewToggle view="list" mode="dock" origin={{ lat: 40.68, lon: -73.97 }} />);
+
+    const list = screen.getByRole("link", { name: "List" });
+    const map = screen.getByRole("link", { name: "Map" });
+    expect(list.getAttribute("aria-current")).toBe("page");
+    expect(map.getAttribute("aria-current")).toBeNull();
+    expect(map.getAttribute("href")).toBe("/?mode=dock&view=map&lat=40.68000&lon=-73.97000");
+  });
 });
 
 describe("StationFinder", () => {
@@ -170,6 +192,32 @@ describe("StationFinder", () => {
     await userEvent.click(screen.getByRole("link", { name: "I need a dock" }));
 
     expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.68000&lon=-73.97000");
+  });
+
+  it("stays on the map when switching mode", async () => {
+    render(
+      <StationFinder mode="bike" view="map" updatedAt={0}>
+        {null}
+      </StationFinder>,
+    );
+
+    expect(screen.getByRole("link", { name: "Map" }).getAttribute("aria-current")).toBe("page");
+    await userEvent.click(screen.getByRole("link", { name: "I need a dock" }));
+
+    expect(push).toHaveBeenCalledWith("/?mode=dock&view=map");
+  });
+
+  it("stays on the map when going to the user's location", async () => {
+    stubGeolocation((onSuccess) => onSuccess({ coords: { latitude: 40.68, longitude: -73.97 } }));
+    render(
+      <StationFinder mode="bike" view="map" updatedAt={0}>
+        {null}
+      </StationFinder>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Use my location" }));
+
+    expect(push).toHaveBeenCalledWith("/?mode=bike&view=map&lat=40.68000&lon=-73.97000");
   });
 
   it("shows how old the data is", () => {
