@@ -5,19 +5,22 @@ import { useOptimistic, useState, useTransition, type ReactNode } from "react";
 import { LastUpdated } from "@/components/LastUpdated";
 import { LocationButton, type LocationProblem } from "@/components/LocationButton";
 import { ModeToggle } from "@/components/ModeToggle";
+import { ViewToggle } from "@/components/ViewToggle";
 import { DEFAULT_LOCATION_LABEL } from "@/lib/constants";
 import { buildHref } from "@/lib/href";
-import type { LatLon, Mode } from "@/types/station";
+import type { LatLon, Mode, View } from "@/types/station";
 
-// The interactive controls around the station list. The list itself arrives as children,
-// already rendered on the server.
+// The interactive controls around the station list or map. The list or map arrives as
+// children, chosen on the server.
 export function StationFinder({
   mode,
+  view = "list",
   origin,
   updatedAt,
   children,
 }: {
   mode: Mode;
+  view?: View;
   // The location the user shared. Leave out while the list uses the default location.
   origin?: LatLon;
   updatedAt: number; // milliseconds
@@ -47,7 +50,7 @@ export function StationFinder({
   const switchMode = (nextMode: Mode) => {
     startTransition(() => {
       setShownMode(nextMode);
-      router.push(buildHref({ mode: nextMode, view: "list", origin }));
+      router.push(buildHref({ mode: nextMode, view, origin }));
     });
   };
 
@@ -55,13 +58,13 @@ export function StationFinder({
     setLocationProblem(null);
     startTransition(() => {
       setLoadingLocation(true);
-      router.push(buildHref({ mode, view: "list", origin: located }));
+      router.push(buildHref({ mode, view, origin: located }));
     });
   };
 
   return (
     <div className="space-y-4">
-      <ModeToggle mode={shownMode} origin={origin} onSelect={switchMode} />
+      <ModeToggle mode={shownMode} view={view} origin={origin} onSelect={switchMode} />
 
       <div className="flex items-center justify-between gap-3 text-sm">
         <p className="text-slate-600 dark:text-slate-400">
@@ -80,7 +83,10 @@ export function StationFinder({
         </p>
       )}
 
-      <LastUpdated updatedAt={updatedAt} />
+      <div className="flex items-center justify-between gap-3">
+        <LastUpdated updatedAt={updatedAt} />
+        <ViewToggle view={view} mode={mode} origin={origin} />
+      </div>
 
       <div aria-busy={isPending} className={isPending ? "opacity-50 transition-opacity" : ""}>
         {children}
