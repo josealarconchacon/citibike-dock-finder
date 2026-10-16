@@ -3,8 +3,6 @@
 import { useState } from "react";
 import type { LatLon } from "@/types/station";
 
-// Why the browser couldn't give a location. The parent turns this into a message,
-// because only it knows which stations are on screen.
 export type LocationProblem = "insecure" | "unsupported" | "blocked" | "unavailable";
 
 // Asks the browser for the user's location.
@@ -22,8 +20,6 @@ export function LocationButton({
   const busy = locating || pending;
 
   function handleClick() {
-    // Browsers only share location on https:// pages and localhost. Elsewhere they refuse
-    // without asking, and report it as if the user had blocked it.
     if (window.isSecureContext === false) {
       onError("insecure");
       return;
