@@ -47,7 +47,7 @@ npm run dev        # http://localhost:3000
 - [ ] Auto-refresh every 60 seconds while the tab is visible
 - [ ] Save favorite stations in the browser
 - [ ] Search by address instead of GPS
-- [ ] A map view
+- [x] A map view
 
 ## Data
 
