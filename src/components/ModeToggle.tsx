@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { buildHref } from "@/lib/href";
-import type { LatLon, Mode } from "@/types/station";
+import type { LatLon, Mode, View } from "@/types/station";
 
 const MODES: { value: Mode; label: string }[] = [
   { value: "bike", label: "I need a bike" },
@@ -13,10 +13,13 @@ const MODES: { value: Mode; label: string }[] = [
 // Pass origin only when the user has shared a location, so the links keep it.
 export function ModeToggle({
   mode,
+  view = "list",
   origin,
   onSelect,
 }: {
   mode: Mode;
+  // Switching mode keeps the current view.
+  view?: View;
   origin?: LatLon;
   // Lets the parent run the navigation itself, so it can show its own loading state.
   // Without it the links navigate on their own.
@@ -27,7 +30,7 @@ export function ModeToggle({
       {MODES.map(({ value, label }) => (
         <Link
           key={value}
-          href={buildHref({ mode: value, view: "list", origin })}
+          href={buildHref({ mode: value, view, origin })}
           // onNavigate only fires for in-app navigation, so Cmd/Ctrl+click still opens a new tab.
           onNavigate={
             onSelect &&
