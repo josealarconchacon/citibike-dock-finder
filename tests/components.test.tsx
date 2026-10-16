@@ -51,6 +51,7 @@ function stubGeolocation(getCurrentPosition: Geolocate) {
 afterEach(() => {
   cleanup();
   push.mockClear();
+  vi.unstubAllGlobals();
   delete (navigator as { geolocation?: unknown }).geolocation;
 });
 
@@ -272,6 +273,26 @@ describe("StationFinder", () => {
     expect(screen.getByRole("alert").textContent).toBe(
       "Location is blocked, so this list still shows stations near your last location.",
     );
+  });
+
+  it("explains that location needs https instead of asking the browser", async () => {
+    // Like opening the dev server on a phone at http://192.168.x.x.
+    vi.stubGlobal("isSecureContext", false);
+    const getCurrentPosition = vi.fn();
+    stubGeolocation(getCurrentPosition);
+    render(
+      <StationFinder mode="bike" updatedAt={0}>
+        {null}
+      </StationFinder>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Use my location" }));
+
+    expect(screen.getByRole("alert").textContent).toBe(
+      "Your browser only shares your location on secure (https://) pages.",
+    );
+    expect(getCurrentPosition).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 });
 

@@ -42,6 +42,7 @@ export function StationFinder({
   // Says what the list is showing instead, which depends on whether a location was already set.
   const showing = usingDefaultLocation ? DEFAULT_LOCATION_LABEL : "your last location";
   const locationMessages: Record<LocationProblem, string> = {
+    insecure: "Your browser only shares your location on secure (https://) pages.",
     unsupported: "Your browser can't share a location.",
     blocked: `Location is blocked, so this list still shows stations near ${showing}.`,
     unavailable: "We couldn't get your location. Try again.",
