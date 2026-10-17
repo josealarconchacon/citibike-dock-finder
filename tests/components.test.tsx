@@ -108,7 +108,7 @@ describe("StationList", () => {
     expect(
       screen.getByRole("heading", { level: 2, name: "Nearest stations with bikes" }),
     ).toBeTruthy();
-    expect(screen.getByRole("list", { name: "Nearest stations with bikes" })).toBeTruthy();
+    expect(screen.getByRole("region", { name: "Nearest stations with bikes" })).toBeTruthy();
   });
 });
 
