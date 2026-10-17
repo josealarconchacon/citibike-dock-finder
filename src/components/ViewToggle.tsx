@@ -18,7 +18,7 @@ export function ViewToggle({ view, mode, origin }: { view: View; mode: Mode; ori
           key={value}
           href={buildHref({ mode, view: value, origin })}
           aria-current={value === view ? "page" : undefined}
-          className={`rounded-md px-3 py-1 font-semibold ${
+          className={`inline-flex min-h-11 items-center rounded-md px-3 font-semibold ${
             value === view
               ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
               : "text-slate-700 dark:text-slate-300"

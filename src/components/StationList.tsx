@@ -50,7 +50,7 @@ export function StationList({
       <h2 id="station-list-heading" className="mb-3 font-semibold">
         Nearest stations with {mode === "bike" ? "bikes" : "open docks"}
       </h2>
-      <ul className="space-y-3" aria-labelledby="station-list-heading">
+      <ul className="space-y-3">
         {stations.map((station) => (
           <StationCard key={station.id} station={station} mode={mode} />
         ))}
