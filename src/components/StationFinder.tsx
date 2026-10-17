@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useOptimistic, useState, useTransition, type ReactNode } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import { LastUpdated } from "@/components/LastUpdated";
 import { LocationButton, type LocationProblem } from "@/components/LocationButton";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -30,13 +30,6 @@ export function StationFinder({
   const [isPending, startTransition] = useTransition();
   const [locationProblem, setLocationProblem] = useState<LocationProblem | null>(null);
 
-  // Both controls navigate inside one transition, so they share one loading state:
-  // isPending stays true, and the list stays dimmed, until the new page has arrived.
-  // The optimistic values show the user's choice straight away and reset by themselves
-  // when the transition ends.
-  const [shownMode, setShownMode] = useOptimistic(mode);
-  const [loadingLocation, setLoadingLocation] = useOptimistic(false);
-
   const usingDefaultLocation = origin === undefined;
 
   // Says what the list is showing instead, which depends on whether a location was already set.
@@ -48,24 +41,16 @@ export function StationFinder({
     unavailable: "We couldn't get your location. Try again.",
   };
 
-  const switchMode = (nextMode: Mode) => {
-    startTransition(() => {
-      setShownMode(nextMode);
-      router.push(buildHref({ mode: nextMode, view, origin }));
-    });
-  };
-
   const showStationsNear = (located: LatLon) => {
     setLocationProblem(null);
     startTransition(() => {
-      setLoadingLocation(true);
       router.push(buildHref({ mode, view, origin: located }));
     });
   };
 
   return (
     <div className="space-y-4">
-      <ModeToggle mode={shownMode} view={view} origin={origin} onSelect={switchMode} />
+      <ModeToggle mode={mode} view={view} origin={origin} />
 
       <div className="flex items-center justify-between gap-3 text-sm">
         <p className="text-slate-600 dark:text-slate-400">
@@ -74,7 +59,7 @@ export function StationFinder({
         <LocationButton
           onLocated={showStationsNear}
           onError={setLocationProblem}
-          pending={loadingLocation}
+          pending={isPending}
         />
       </div>
 

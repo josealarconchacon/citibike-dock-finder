@@ -9,21 +9,15 @@ const MODES: { value: Mode; label: string }[] = [
   { value: "dock", label: "I need a dock" },
 ];
 
-// Each mode is a link, so the URL stays the source of truth for which one is selected.
-// Pass origin only when the user has shared a location, so the links keep it.
 export function ModeToggle({
   mode,
   view = "list",
   origin,
-  onSelect,
 }: {
   mode: Mode;
   // Switching mode keeps the current view.
   view?: View;
   origin?: LatLon;
-  // Lets the parent run the navigation itself, so it can show its own loading state.
-  // Without it the links navigate on their own.
-  onSelect?: (mode: Mode) => void;
 }) {
   return (
     <nav className="grid grid-cols-2 gap-2" aria-label="What do you need?">
@@ -31,14 +25,6 @@ export function ModeToggle({
         <Link
           key={value}
           href={buildHref({ mode: value, view, origin })}
-          // onNavigate only fires for in-app navigation, so Cmd/Ctrl+click still opens a new tab.
-          onNavigate={
-            onSelect &&
-            ((event) => {
-              event.preventDefault();
-              onSelect(value);
-            })
-          }
           aria-current={value === mode ? "page" : undefined}
           className={
             value === mode

@@ -183,16 +183,16 @@ describe("StationFinder", () => {
     );
   });
 
-  it("switches mode through the router, keeping the user's location", async () => {
+  it("links to the other mode, keeping the user's location", async () => {
     render(
       <StationFinder mode="bike" origin={userLocation} updatedAt={0}>
         {null}
       </StationFinder>,
     );
 
-    await userEvent.click(screen.getByRole("link", { name: "I need a dock" }));
-
-    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.680&lon=-73.970");
+    expect(screen.getByRole("link", { name: "I need a dock" }).getAttribute("href")).toBe(
+      "/?mode=dock&lat=40.680&lon=-73.970",
+    );
   });
 
   it("stays on the map when switching mode", async () => {
@@ -203,9 +203,10 @@ describe("StationFinder", () => {
     );
 
     expect(screen.getByRole("link", { name: "Map" }).getAttribute("aria-current")).toBe("page");
-    await userEvent.click(screen.getByRole("link", { name: "I need a dock" }));
 
-    expect(push).toHaveBeenCalledWith("/?mode=dock&view=map");
+    expect(screen.getByRole("link", { name: "I need a dock" }).getAttribute("href")).toBe(
+      "/?mode=dock&view=map",
+    );
   });
 
   it("stays on the map when going to the user's location", async () => {
