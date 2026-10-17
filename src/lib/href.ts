@@ -15,8 +15,8 @@ export function buildHref({
     params.set("view", "map");
   }
   if (origin) {
-    params.set("lat", origin.lat.toFixed(5));
-    params.set("lon", origin.lon.toFixed(5));
+    params.set("lat", origin.lat.toFixed(3));
+    params.set("lon", origin.lon.toFixed(3));
   }
 
   return `/?${params}`;
