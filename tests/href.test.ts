@@ -11,10 +11,11 @@ describe("buildHref", () => {
     expect(buildHref({ mode: "bike", view: "map" })).toBe("/?mode=bike&view=map");
   });
 
-  it("rounds coordinates to 5 decimals", () => {
+  // 3 decimals is about 110 m, so a shared link never shows someone's exact location.
+  it("rounds coordinates to 3 decimals for privacy", () => {
     expect(
       buildHref({ mode: "bike", view: "list", origin: { lat: 40.768512345, lon: -73.964598765 } }),
-    ).toBe("/?mode=bike&lat=40.76851&lon=-73.96460");
+    ).toBe("/?mode=bike&lat=40.769&lon=-73.965");
   });
 
   it("builds URLs that parseQuery reads back", () => {

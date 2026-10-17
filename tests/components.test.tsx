@@ -140,7 +140,7 @@ describe("ViewToggle", () => {
     const map = screen.getByRole("link", { name: "Map" });
     expect(list.getAttribute("aria-current")).toBe("page");
     expect(map.getAttribute("aria-current")).toBeNull();
-    expect(map.getAttribute("href")).toBe("/?mode=dock&view=map&lat=40.68000&lon=-73.97000");
+    expect(map.getAttribute("href")).toBe("/?mode=dock&view=map&lat=40.680&lon=-73.970");
   });
 });
 
@@ -179,7 +179,7 @@ describe("StationFinder", () => {
 
     expect(screen.getByText("Near you")).toBeTruthy();
     expect(screen.getByRole("link", { name: "I need a dock" }).getAttribute("href")).toBe(
-      "/?mode=dock&lat=40.68000&lon=-73.97000",
+      "/?mode=dock&lat=40.680&lon=-73.970",
     );
   });
 
@@ -192,7 +192,7 @@ describe("StationFinder", () => {
 
     await userEvent.click(screen.getByRole("link", { name: "I need a dock" }));
 
-    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.68000&lon=-73.97000");
+    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.680&lon=-73.970");
   });
 
   it("stays on the map when switching mode", async () => {
@@ -218,7 +218,7 @@ describe("StationFinder", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Use my location" }));
 
-    expect(push).toHaveBeenCalledWith("/?mode=bike&view=map&lat=40.68000&lon=-73.97000");
+    expect(push).toHaveBeenCalledWith("/?mode=bike&view=map&lat=40.680&lon=-73.970");
   });
 
   it("shows how old the data is", () => {
@@ -241,7 +241,7 @@ describe("StationFinder", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Use my location" }));
 
-    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.68000&lon=-73.97000");
+    expect(push).toHaveBeenCalledWith("/?mode=dock&lat=40.680&lon=-73.970");
   });
 
   it("shows an error and stays put when location is blocked", async () => {
