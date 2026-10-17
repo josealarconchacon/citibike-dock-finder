@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { PendingDot } from "@/components/PendingDot";
 import { buildHref } from "@/lib/href";
 import type { LatLon, Mode, View } from "@/types/station";
 
@@ -26,7 +25,6 @@ export function ViewToggle({ view, mode, origin }: { view: View; mode: Mode; ori
           }`}
         >
           {label}
-          <PendingDot />
         </Link>
       ))}
     </nav>
