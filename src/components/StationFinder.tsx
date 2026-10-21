@@ -74,7 +74,10 @@ export function StationFinder({
         <ViewToggle view={view} mode={mode} origin={origin} />
       </div>
 
-      <div aria-busy={isPending} className={isPending ? "opacity-50 transition-opacity" : ""}>
+      <div
+        aria-busy={isPending}
+        className={`space-y-4 ${isPending ? "opacity-50 transition-opacity" : ""}`}
+      >
         {children}
       </div>
     </div>
