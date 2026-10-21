@@ -23,3 +23,6 @@ export const WALKING_METERS_PER_MINUTE = 80;
 export const MAP_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 export const MAP_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+// The maximum number of stations a user can favorite.
+export const MAX_FAVORITES = 5;
