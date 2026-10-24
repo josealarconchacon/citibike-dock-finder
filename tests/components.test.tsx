@@ -62,17 +62,26 @@ describe("StationCard", () => {
     render(<StationCard station={station} mode="bike" />);
 
     expect(screen.getByRole("heading", { name: "E 68 St & Lexington Ave" })).toBeTruthy();
-    expect(screen.getByText("350 m")).toBeTruthy();
-    expect(screen.getByText(/4 min walk/)).toBeTruthy();
+    expect(screen.getByText("350 m · 4 min walk")).toBeTruthy();
   });
 
   it("shows counts as text, with singular and plural labels", () => {
     render(<StationCard station={station} mode="bike" />);
 
+    // The big badge: classic + e-bikes, labeled for one bike.
+    expect(screen.getByText("1")).toBeTruthy();
     expect(screen.getByText("bike")).toBeTruthy();
-    expect(screen.getByText("e-bikes")).toBeTruthy();
-    expect(screen.getByText("docks")).toBeTruthy();
+    // The detail line.
+    expect(screen.getByText("1 classic")).toBeTruthy();
+    expect(screen.getByText("0 e-bikes")).toBeTruthy();
+    expect(screen.getByText("12 docks")).toBeTruthy();
+  });
+
+  it("shows open docks in the big badge in dock mode", () => {
+    render(<StationCard station={station} mode="dock" />);
+
     expect(screen.getByText("12")).toBeTruthy();
+    expect(screen.getByText("docks")).toBeTruthy();
   });
 
   it("links to walking directions with an accessible name", () => {
@@ -105,10 +114,6 @@ describe("StationList", () => {
       />,
     );
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
-    expect(
-      screen.getByRole("heading", { level: 2, name: "Nearest stations with bikes" }),
-    ).toBeTruthy();
-    expect(screen.getByRole("region", { name: "Nearest stations with bikes" })).toBeTruthy();
   });
 });
 
@@ -155,8 +160,20 @@ describe("StationFinder", () => {
     );
 
     // The page also has other lists (like the color key), so look only inside the results.
-    const results = screen.getByRole("region", { name: "Nearest stations with bikes" });
+    const results = screen.getByRole("list", { name: "Nearest stations with bikes" });
     expect(within(results).getAllByRole("listitem")).toHaveLength(1);
+  });
+
+  it("names the results for the current mode", () => {
+    render(
+      <StationFinder mode="dock" updatedAt={0}>
+        {null}
+      </StationFinder>,
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Nearest stations with open docks" }),
+    ).toBeTruthy();
   });
 
   it("leaves the location out of the mode links while on the default location", () => {

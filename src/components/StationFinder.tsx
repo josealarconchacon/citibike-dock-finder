@@ -111,7 +111,10 @@ export function StationFinder({
               isPending ? "opacity-50 transition-opacity" : ""
             }`}
           >
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between gap-3">
+              <h2 id="results-heading" className="font-semibold">
+                Nearest stations with {mode === "bike" ? "bikes" : "open docks"}
+              </h2>
               <ViewToggle view={view} mode={mode} origin={origin} />
             </div>
             {children}
