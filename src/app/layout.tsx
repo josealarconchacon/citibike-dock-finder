@@ -22,13 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         suppressHydrationWarning
         className="min-h-dvh bg-page font-sans text-[15px] text-fg antialiased"
       >
-        <div className="flex min-h-dvh flex-col">
-          <div className="flex-1">{children}</div>
-          <footer className="mx-auto w-full max-w-page px-4 pb-6 text-xs text-muted desktop:px-6">
-            Data: Citi Bike&apos;s public GBFS feed. Counts can be about a minute behind; reload the
-            page for the latest. Not affiliated with Citi Bike or Lyft.
-          </footer>
-        </div>
+        {children}
       </body>
     </html>
   );

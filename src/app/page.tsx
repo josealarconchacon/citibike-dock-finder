@@ -28,13 +28,15 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       view={query.view}
       origin={usingDefaultLocation ? undefined : origin}
       updatedAt={updatedAt}
+      sidebar={
+        <FavoriteStations
+          favorites={favorites}
+          stationNames={stationNames}
+          origin={origin}
+          mode={mode}
+        />
+      }
     >
-      <FavoriteStations
-        favorites={favorites}
-        stationNames={stationNames}
-        origin={origin}
-        mode={mode}
-      />
       {showMap ? (
         <LazyStationMap
           stations={stations}

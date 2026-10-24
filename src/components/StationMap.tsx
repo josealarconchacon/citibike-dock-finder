@@ -123,18 +123,7 @@ export function StationMap({
         aria-label="Map legend"
         className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted"
       >
-        <li>Numbers show {mode === "dock" ? "open docks" : "available bikes"}:</li>
-        <li className="flex items-center gap-1.5">
-          <span aria-hidden="true" className={`size-3 rounded-full ${statusStyles(4).dot}`} /> 4 or
-          more
-        </li>
-        <li className="flex items-center gap-1.5">
-          <span aria-hidden="true" className={`size-3 rounded-full ${statusStyles(1).dot}`} /> 1 to
-          3
-        </li>
-        <li className="flex items-center gap-1.5">
-          <span aria-hidden="true" className={`size-3 rounded-full ${statusStyles(0).dot}`} /> 0
-        </li>
+        <li>Numbers show {mode === "dock" ? "open docks" : "available bikes"}</li>
         <li className="flex items-center gap-1.5">
           <span aria-hidden="true" className="size-3 rounded-full bg-sky-600" /> {originLabel}
         </li>

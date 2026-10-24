@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { StationCard } from "@/components/StationCard";
@@ -154,7 +154,9 @@ describe("StationFinder", () => {
       </StationFinder>,
     );
 
-    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+    // The page also has other lists (like the color key), so look only inside the results.
+    const results = screen.getByRole("region", { name: "Nearest stations with bikes" });
+    expect(within(results).getAllByRole("listitem")).toHaveLength(1);
   });
 
   it("leaves the location out of the mode links while on the default location", () => {

@@ -7,18 +7,20 @@ import { PinIcon } from "@/components/icons";
 import { LastUpdated } from "@/components/LastUpdated";
 import { LocationButton, type LocationProblem } from "@/components/LocationButton";
 import { ModeToggle } from "@/components/ModeToggle";
+import { StatusLegend } from "@/components/StatusLegend";
 import { ViewToggle } from "@/components/ViewToggle";
 import { DEFAULT_LOCATION_LABEL } from "@/lib/constants";
 import { buildHref } from "@/lib/href";
 import type { LatLon, Mode, View } from "@/types/station";
 
-// The interactive controls around the station list or map. The list or map arrives as
-// children, chosen on the server.
+// The page frame: header controls, saved stations, and the list or map. The list or map
+// arrives as children and the saved stations as `sidebar`, both rendered on the server.
 export function StationFinder({
   mode,
   view = "list",
   origin,
   updatedAt,
+  sidebar,
   children,
 }: {
   mode: Mode;
@@ -26,6 +28,7 @@ export function StationFinder({
   // The location the user shared. Leave out while the list uses the default location.
   origin?: LatLon;
   updatedAt: number; // milliseconds
+  sidebar?: ReactNode;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -86,22 +89,40 @@ export function StationFinder({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-page space-y-4 px-4 py-5 desktop:px-6 desktop:py-6">
+      <main className="mx-auto w-full max-w-page px-4 py-5 desktop:px-6 desktop:py-6">
         {locationProblem && (
-          <p role="alert" className="text-sm text-status-none-text">
+          <p role="alert" className="mb-4 text-sm text-status-none-text">
             {locationMessages[locationProblem]}
           </p>
         )}
 
-        <div className="flex justify-end">
-          <ViewToggle view={view} mode={mode} origin={origin} />
-        </div>
+        {/* Phones: one column in source order (saved, results, legend, footer).
+            Desktop: saved and legend stack on the left; results and footer on the right.
+            The results span the first two rows, so the 1fr row absorbs their height and the
+            legend stays tucked under the saved stations. */}
+        <div className="grid grid-cols-1 gap-5 desktop:grid-cols-[clamp(300px,30%,380px)_minmax(0,1fr)] desktop:grid-rows-[auto_1fr_auto] desktop:gap-x-6 desktop:gap-y-4">
+          {sidebar && (
+            <div className="min-w-0 desktop:col-start-1 desktop:row-start-1">{sidebar}</div>
+          )}
 
-        <div
-          aria-busy={isPending}
-          className={`space-y-4 ${isPending ? "opacity-50 transition-opacity" : ""}`}
-        >
-          {children}
+          <div
+            aria-busy={isPending}
+            className={`min-w-0 space-y-3 desktop:col-start-2 desktop:row-span-2 desktop:row-start-1 ${
+              isPending ? "opacity-50 transition-opacity" : ""
+            }`}
+          >
+            <div className="flex justify-end">
+              <ViewToggle view={view} mode={mode} origin={origin} />
+            </div>
+            {children}
+          </div>
+
+          <StatusLegend className="desktop:col-start-1 desktop:row-start-2 desktop:self-start" />
+
+          <footer className="text-xs text-muted desktop:col-start-2 desktop:row-start-3">
+            Data: Citi Bike&apos;s public GBFS feed. Counts can be about a minute behind; reload the
+            page for the latest. Not affiliated with Citi Bike or Lyft.
+          </footer>
         </div>
       </main>
     </>

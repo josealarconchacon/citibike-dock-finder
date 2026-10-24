@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { FavoriteStations } from "@/components/FavoriteStations";
 import { makeStation } from "./fixtures";
@@ -18,7 +19,22 @@ describe("FavoriteStations", () => {
     render(<FavoriteStations favorites={[]} stationNames={[]} origin={origin} mode="bike" />);
 
     expect(screen.getByText(/Save your home or work station/)).toBeTruthy();
-    expect(screen.getByText("+ Add a station")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "+ Add" })).toBeTruthy();
+  });
+
+  it("keeps the add form hidden until + Add is pressed, and Cancel closes it", async () => {
+    render(<FavoriteStations favorites={[]} stationNames={[]} origin={origin} mode="bike" />);
+    expect(screen.queryByLabelText("Station name")).toBeNull();
+
+    await userEvent.click(screen.getByRole("button", { name: "+ Add" }));
+    expect(screen.getByLabelText("Station name")).toBeTruthy();
+    // Both open buttons (desktop header and phone rail card) now read "Cancel".
+    const cancel = screen.getAllByRole("button", { name: "Cancel" });
+    expect(cancel).toHaveLength(2);
+    expect(cancel[0].getAttribute("aria-expanded")).toBe("true");
+
+    await userEvent.click(cancel[0]);
+    expect(screen.queryByLabelText("Station name")).toBeNull();
   });
 
   it("shows the useful count for the current mode", () => {
@@ -44,13 +60,13 @@ describe("FavoriteStations", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Remove W 4 St from your stations" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Remove W 4 St" })).toBeTruthy();
   });
 
-  it("hides the add form when 5 stations are saved", () => {
+  it("hides the add buttons when 5 stations are saved", () => {
     const five = ["a", "b", "c", "d", "e"].map((id) => makeStation({ id, name: id }));
     render(<FavoriteStations favorites={five} stationNames={[]} origin={origin} mode="bike" />);
 
-    expect(screen.queryByText("+ Add a station")).toBeNull();
+    expect(screen.queryByRole("button", { name: /add/i })).toBeNull();
   });
 });
