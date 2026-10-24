@@ -15,17 +15,25 @@ const getServerNow = () => null;
 
 export function describeAge(updatedAt: number, now: number): string {
   const seconds = Math.max(0, Math.round((now - updatedAt) / 1000));
-  if (seconds < 60) return "less than a minute ago";
-  const minutes = Math.round(seconds / 60);
-  return minutes === 1 ? "1 minute ago" : `${minutes} minutes ago`;
+  if (seconds < 60) return "just now";
+  return `${Math.round(seconds / 60)} min ago`;
 }
 
 export function LastUpdated({ updatedAt }: { updatedAt: number }) {
   const now = useSyncExternalStore(subscribe, getNow, getServerNow);
 
   return (
-    <p className="text-xs text-slate-500 dark:text-slate-400">
-      {now === null ? "Live data" : `Updated ${describeAge(updatedAt, now)}`}
+    <p className="flex items-center gap-1.5 text-xs whitespace-nowrap text-muted">
+      <span aria-hidden="true" className="size-2 rounded-full bg-status-good-dot" />
+      {now === null ? (
+        "Live data"
+      ) : (
+        <span>
+          {/* sr-only (not hidden) on phones, so screen readers still hear "Updated". */}
+          <span className="sr-only desktop:not-sr-only">Updated </span>
+          {describeAge(updatedAt, now)}
+        </span>
+      )}
     </p>
   );
 }

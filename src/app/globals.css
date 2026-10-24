@@ -1,17 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: light dark;
+/* Design tokens. Each variable becomes a Tailwind class: --color-surface -> bg-surface,
+   --radius-card -> rounded-card, --breakpoint-desktop -> desktop:, and so on. */
+@theme {
+  --color-page: #0b1120;
+  --color-header: #0e1626;
+  --color-surface: #111a2b;
+  --color-line: #1e293b;
+  --color-line-2: #243047;
+  --color-line-3: #2b3a55;
+
+  --color-fg: #e6edf5;
+  --color-fg-2: #cbd5e1;
+  --color-muted: #94a3b8;
+  --color-accent: #5eead4;
+  --color-primary: #14796f;
+
+  /* Availability: 0 = none, 1-3 = low, 4+ = good. Use statusStyles() in src/lib/status.ts. */
+  --color-status-none-bg: rgb(248 113 113 / 0.14);
+  --color-status-none-text: #fca5a5;
+  --color-status-none-border: rgb(248 113 113 / 0.4);
+  --color-status-none-dot: #f87171;
+  --color-status-low-bg: rgb(251 191 36 / 0.14);
+  --color-status-low-text: #fcd34d;
+  --color-status-low-border: rgb(251 191 36 / 0.4);
+  --color-status-low-dot: #fbbf24;
+  --color-status-good-bg: rgb(52 211 153 / 0.14);
+  --color-status-good-text: #6ee7b7;
+  --color-status-good-border: rgb(52 211 153 / 0.4);
+  --color-status-good-dot: #34d399;
+
+  --radius-card: 16px;
+  --radius-badge: 12px;
+  --radius-control: 8px;
+
+  --container-page: 75rem; /* 1200px */
+
+  /* Two columns from 900px; the header fits on one row from 1100px. */
+  --breakpoint-desktop: 56.25rem;
+  --breakpoint-wide: 68.75rem;
 }
 
-body {
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+/* `inline` because --font-inter is set on <html> by next/font, not known up front. */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+:root {
+  color-scheme: dark;
 }

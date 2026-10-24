@@ -10,7 +10,7 @@ export const LazyStationMap = dynamic(
     loading: () => (
       <div
         aria-hidden="true"
-        className="h-[60dvh] min-h-80 w-full animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800"
+        className="h-[60dvh] min-h-80 w-full animate-pulse rounded-card bg-surface motion-reduce:animate-none"
       />
     ),
   },

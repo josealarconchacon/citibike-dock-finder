@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { availabilityLevel, availabilityText, plural, usefulCount } from "@/lib/format";
+import { availabilityLevel, availabilityText, plural, unitLabel, usefulCount } from "@/lib/format";
 
 const station = { classicBikes: 1, ebikes: 2, docks: 1 };
 
@@ -28,6 +28,15 @@ describe("usefulCount", () => {
   it("counts all bikes in bike mode and docks in dock mode", () => {
     expect(usefulCount(station, "bike")).toBe(3);
     expect(usefulCount(station, "dock")).toBe(1);
+  });
+});
+
+describe("unitLabel", () => {
+  it("names the unit for the mode, singular for 1", () => {
+    expect(unitLabel(1, "bike")).toBe("bike");
+    expect(unitLabel(0, "bike")).toBe("bikes");
+    expect(unitLabel(1, "dock")).toBe("dock");
+    expect(unitLabel(7, "dock")).toBe("docks");
   });
 });
 

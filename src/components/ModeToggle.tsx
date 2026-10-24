@@ -20,17 +20,18 @@ export function ModeToggle({
   origin?: LatLon;
 }) {
   return (
-    <nav className="grid grid-cols-2 gap-2" aria-label="What do you need?">
+    <nav
+      aria-label="What do you need?"
+      className="grid w-full grid-cols-2 gap-1 rounded-badge border border-line-2 bg-page p-1 desktop:w-max"
+    >
       {MODES.map(({ value, label }) => (
         <Link
           key={value}
           href={buildHref({ mode: value, view, origin })}
           aria-current={value === mode ? "page" : undefined}
-          className={
-            value === mode
-              ? "flex min-h-11 items-center justify-center rounded-lg bg-teal-700 px-3 py-2 text-center text-sm font-semibold text-white"
-              : "flex min-h-11 items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-semibold dark:border-slate-700"
-          }
+          className={`flex min-h-11 items-center justify-center rounded-control px-4 text-center text-sm font-semibold desktop:min-h-9 ${
+            value === mode ? "bg-primary text-white" : "text-fg-2 hover:bg-surface hover:text-fg"
+          }`}
         >
           {label}
         </Link>

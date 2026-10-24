@@ -1,9 +1,10 @@
 import { removeFavoriteAction } from "@/app/actions";
-import { AddFavoriteForm } from "@/components/AddFavoriteForm";
-import { AvailabilityBadge } from "@/components/AvailabilityBadge";
+import { FavoritesPanel } from "@/components/FavoritesPanel";
+import { CloseIcon } from "@/components/icons";
 import { MAX_FAVORITES } from "@/lib/constants";
 import { formatDistance, haversine } from "@/lib/distance";
-import { usefulCount } from "@/lib/format";
+import { unitLabel, usefulCount } from "@/lib/format";
+import { statusStyles } from "@/lib/status";
 import type { LatLon, Mode, Station } from "@/types/station";
 
 export function FavoriteStations({
@@ -17,58 +18,61 @@ export function FavoriteStations({
   origin: LatLon;
   mode: Mode;
 }) {
-  const label = mode === "dock" ? "docks" : "bikes";
-  const canAddMore = favorites.length < MAX_FAVORITES;
-
   return (
-    <section
-      aria-labelledby="favorites-heading"
-      className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+    <FavoritesPanel
+      count={favorites.length}
+      canAddMore={favorites.length < MAX_FAVORITES}
+      stationNames={stationNames}
     >
-      <h2 id="favorites-heading" className="font-semibold">
-        Your stations
-      </h2>
+      {favorites.map((station) => {
+        const count = usefulCount(station, mode);
+        const unit = unitLabel(count, mode);
+        const status = statusStyles(count);
 
-      {favorites.length === 0 ? (
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Save your home or work station to check it at a glance.
-        </p>
-      ) : (
-        <ul className="mt-2 divide-y divide-slate-200 dark:divide-slate-800">
-          {favorites.map((station) => (
-            <li key={station.id} className="flex items-center justify-between gap-3 py-2">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{station.name}</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  {formatDistance(haversine(origin, station))} away
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-1">
-                <AvailabilityBadge count={usefulCount(station, mode)} label={label} />
-                <form action={removeFavoriteAction}>
-                  <input type="hidden" name="id" value={station.id} />
-                  <button
-                    type="submit"
-                    aria-label={`Remove ${station.name} from your stations`}
-                    className="inline-flex size-11 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    <span aria-hidden="true">✕</span>
-                  </button>
-                </form>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+        return (
+          <li
+            key={station.id}
+            className="flex w-[150px] shrink-0 snap-start flex-col gap-2 rounded-badge border border-line bg-surface p-3 desktop:w-auto desktop:flex-row desktop:items-center desktop:gap-3 desktop:rounded-none desktop:border-0 desktop:bg-transparent desktop:px-0 desktop:py-2.5"
+          >
+            {/* Phones: the badge and × share the top of the card. Desktop: `contents` drops
+                this wrapper so both join the row, and order-last moves × to the end. */}
+            <div className="flex items-start justify-between desktop:contents">
+              <span
+                className={`inline-flex shrink-0 items-baseline justify-center gap-1 rounded-control border px-2 py-1 text-sm font-bold tabular-nums desktop:min-w-9 ${status.bg} ${status.border} ${status.text}`}
+              >
+                {count}
+                <span className="text-xs font-medium desktop:hidden">{unit}</span>
+              </span>
+              <form
+                action={removeFavoriteAction}
+                className="-mt-2 -mr-2 desktop:order-last desktop:m-0"
+              >
+                <input type="hidden" name="id" value={station.id} />
+                <button
+                  type="submit"
+                  aria-label={`Remove ${station.name}`}
+                  className="inline-flex size-11 items-center justify-center rounded-control text-muted hover:bg-line hover:text-fg desktop:size-8"
+                >
+                  <CloseIcon className="size-4" />
+                </button>
+              </form>
+            </div>
 
-      {canAddMore && (
-        <details className="mt-2">
-          <summary className="inline-flex min-h-11 cursor-pointer items-center text-sm font-semibold text-teal-700 dark:text-teal-400">
-            + Add a station
-          </summary>
-          <AddFavoriteForm stationNames={stationNames} />
-        </details>
-      )}
-    </section>
+            <div className="min-w-0 desktop:flex-1">
+              <p
+                title={station.name}
+                className="line-clamp-2 text-sm font-semibold desktop:block desktop:truncate"
+              >
+                {station.name}
+              </p>
+              <p className="text-xs text-muted">
+                <span className="hidden desktop:inline">{`${count} ${unit} · `}</span>
+                {formatDistance(haversine(origin, station))} away
+              </p>
+            </div>
+          </li>
+        );
+      })}
+    </FavoritesPanel>
   );
 }

@@ -49,7 +49,7 @@ export function LocationButton({
       type="button"
       onClick={handleClick}
       disabled={busy}
-      className="inline-flex min-h-11 items-center font-semibold text-teal-700 underline disabled:opacity-60 dark:text-teal-400"
+      className="inline-flex min-h-11 shrink-0 items-center font-semibold text-accent hover:underline disabled:opacity-60"
     >
       {busy ? "Finding you…" : "Use my location"}
     </button>
