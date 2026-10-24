@@ -3,7 +3,7 @@ export default function Loading() {
     "animate-pulse rounded-lg bg-slate-200 motion-reduce:animate-none dark:bg-slate-800";
 
   return (
-    <div role="status">
+    <div role="status" className="mx-auto max-w-page px-4 py-5 desktop:px-6">
       <span className="sr-only">Loading nearby stations…</span>
       <div aria-hidden="true" className="space-y-4">
         <div className="grid grid-cols-2 gap-2">

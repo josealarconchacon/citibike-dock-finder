@@ -16,7 +16,7 @@ export default function Error({
   return (
     <div
       role="alert"
-      className="rounded-xl border border-rose-200 bg-rose-50 p-5 dark:border-rose-900 dark:bg-rose-950"
+      className="mx-4 my-6 rounded-xl border border-rose-200 bg-rose-50 p-5 dark:border-rose-900 dark:bg-rose-950"
     >
       <h2 className="font-semibold">Couldn&apos;t load Citi Bike data</h2>
       <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">

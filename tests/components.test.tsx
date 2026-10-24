@@ -229,7 +229,8 @@ describe("StationFinder", () => {
       </StationFinder>,
     );
 
-    expect(screen.getByText("Updated less than a minute ago")).toBeTruthy();
+    // "Updated" sits in its own span so phones can hide it visually.
+    expect(screen.getByText("just now").textContent).toBe("Updated just now");
   });
 
   it("navigates to the user's location, keeping the current mode", async () => {
@@ -299,8 +300,8 @@ describe("StationFinder", () => {
 
 describe("describeAge", () => {
   it("describes how old the data is", () => {
-    expect(describeAge(0, 20_000)).toBe("less than a minute ago");
-    expect(describeAge(0, 60_000)).toBe("1 minute ago");
-    expect(describeAge(0, 180_000)).toBe("3 minutes ago");
+    expect(describeAge(0, 20_000)).toBe("just now");
+    expect(describeAge(0, 60_000)).toBe("1 min ago");
+    expect(describeAge(0, 180_000)).toBe("3 min ago");
   });
 });

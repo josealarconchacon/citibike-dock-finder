@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type ReactNode } from "react";
+import { Brand } from "@/components/Brand";
+import { PinIcon } from "@/components/icons";
 import { LastUpdated } from "@/components/LastUpdated";
 import { LocationButton, type LocationProblem } from "@/components/LocationButton";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -49,37 +51,59 @@ export function StationFinder({
   };
 
   return (
-    <div className="space-y-4">
-      <ModeToggle mode={mode} view={view} origin={origin} />
+    <>
+      <header className="border-b border-line bg-header">
+        {/* One grid, three arrangements. Phones: brand + time, then the mode toggle, then the
+            location, each on its own row. From 900px: toggle and location share row 2.
+            From 1100px: everything on one row. */}
+        <div className="mx-auto grid max-w-page grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 px-4 py-3 desktop:px-6 wide:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] wide:gap-x-6">
+          <div className="col-start-1 row-start-1 min-w-0">
+            <Brand />
+          </div>
 
-      <div className="flex items-center justify-between gap-3 text-sm">
-        <p className="text-slate-600 dark:text-slate-400">
-          {usingDefaultLocation ? `Near ${DEFAULT_LOCATION_LABEL}` : "Near you"}
-        </p>
-        <LocationButton
-          onLocated={showStationsNear}
-          onError={setLocationProblem}
-          pending={isPending}
-        />
-      </div>
+          <div className="col-start-2 row-start-1 justify-self-end wide:col-start-4">
+            <LastUpdated updatedAt={updatedAt} />
+          </div>
 
-      {locationProblem && (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
-          {locationMessages[locationProblem]}
-        </p>
-      )}
+          <div className="col-span-2 row-start-2 desktop:col-span-1 desktop:col-start-1 wide:col-start-2 wide:row-start-1">
+            <ModeToggle mode={mode} view={view} origin={origin} />
+          </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <LastUpdated updatedAt={updatedAt} />
-        <ViewToggle view={view} mode={mode} origin={origin} />
-      </div>
+          <div className="col-span-2 row-start-3 flex min-h-11 min-w-0 items-center justify-between gap-3 rounded-badge border border-line-2 bg-surface px-3 text-sm desktop:col-span-1 desktop:col-start-2 desktop:row-start-2 desktop:justify-start wide:col-start-3 wide:row-start-1 wide:justify-self-end">
+            <p className="flex min-w-0 items-center gap-2 text-fg-2">
+              <PinIcon className="size-4 shrink-0 text-accent" />
+              <span className="truncate">
+                {usingDefaultLocation ? `Near ${DEFAULT_LOCATION_LABEL}` : "Near you"}
+              </span>
+            </p>
+            <span aria-hidden="true" className="hidden h-5 w-px bg-line-3 desktop:block" />
+            <LocationButton
+              onLocated={showStationsNear}
+              onError={setLocationProblem}
+              pending={isPending}
+            />
+          </div>
+        </div>
+      </header>
 
-      <div
-        aria-busy={isPending}
-        className={`space-y-4 ${isPending ? "opacity-50 transition-opacity" : ""}`}
-      >
-        {children}
-      </div>
-    </div>
+      <main className="mx-auto w-full max-w-page space-y-4 px-4 py-5 desktop:px-6 desktop:py-6">
+        {locationProblem && (
+          <p role="alert" className="text-sm text-status-none-text">
+            {locationMessages[locationProblem]}
+          </p>
+        )}
+
+        <div className="flex justify-end">
+          <ViewToggle view={view} mode={mode} origin={origin} />
+        </div>
+
+        <div
+          aria-busy={isPending}
+          className={`space-y-4 ${isPending ? "opacity-50 transition-opacity" : ""}`}
+        >
+          {children}
+        </div>
+      </main>
+    </>
   );
 }

@@ -22,16 +22,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         suppressHydrationWarning
         className="min-h-dvh bg-page font-sans text-[15px] text-fg antialiased"
       >
-        <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-4 py-6">
-          <header className="mb-5">
-            <h1 className="text-2xl font-bold tracking-tight">Citi Bike Dock Finder</h1>
-            <p className="mt-1 text-sm text-muted">
-              The nearest stations with a free bike or an open dock, from Citi Bike&apos;s live
-              feed.
-            </p>
-          </header>
-          <main className="flex-1">{children}</main>
-          <footer className="mt-8 text-xs text-muted">
+        <div className="flex min-h-dvh flex-col">
+          <div className="flex-1">{children}</div>
+          <footer className="mx-auto w-full max-w-page px-4 pb-6 text-xs text-muted desktop:px-6">
             Data: Citi Bike&apos;s public GBFS feed. Counts can be about a minute behind; reload the
             page for the latest. Not affiliated with Citi Bike or Lyft.
           </footer>
