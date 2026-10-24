@@ -20,9 +20,15 @@ export function usefulCount(station: Counts, mode: Mode): number {
   return mode === "dock" ? station.docks : station.classicBikes + station.ebikes;
 }
 
+// The word that goes with usefulCount(): "bike"/"bikes" or "dock"/"docks".
+export function unitLabel(count: number, mode: Mode): string {
+  const word = mode === "dock" ? "dock" : "bike";
+  return count === 1 ? word : `${word}s`;
+}
+
 export type AvailabilityLevel = "none" | "low" | "good";
 
-// 0 = none, 1-3 = low, 4+ = good. Used to color map markers.
+// 0 = none, 1-3 = low, 4+ = good. statusStyles() turns this into colors.
 export function availabilityLevel(count: number): AvailabilityLevel {
   if (count === 0) return "none";
   if (count <= 3) return "low";
