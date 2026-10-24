@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { Brand } from "@/components/Brand";
 
 export default function Error({
   error,
@@ -14,21 +15,30 @@ export default function Error({
   }, [error]);
 
   return (
-    <div
-      role="alert"
-      className="mx-4 my-6 rounded-xl border border-rose-200 bg-rose-50 p-5 dark:border-rose-900 dark:bg-rose-950"
-    >
-      <h2 className="font-semibold">Couldn&apos;t load Citi Bike data</h2>
-      <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
-        The live feed didn&apos;t respond. This is usually brief.
-      </p>
-      <button
-        type="button"
-        onClick={() => retry()}
-        className="mt-4 min-h-11 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-white dark:text-slate-900"
-      >
-        Try again
-      </button>
-    </div>
+    <>
+      <div className="border-b border-line bg-header">
+        <div className="mx-auto max-w-page px-4 py-3 desktop:px-6">
+          <Brand />
+        </div>
+      </div>
+      <div className="mx-auto max-w-page px-4 py-5 desktop:px-6 desktop:py-6">
+        <div
+          role="alert"
+          className="rounded-card border border-status-none-border bg-status-none-bg p-5"
+        >
+          <h2 className="font-semibold">Couldn&apos;t load Citi Bike data</h2>
+          <p className="mt-1 text-sm text-fg-2">
+            The live feed didn&apos;t respond. This is usually brief.
+          </p>
+          <button
+            type="button"
+            onClick={() => retry()}
+            className="mt-4 min-h-11 rounded-control bg-primary px-4 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
